@@ -1,0 +1,37 @@
+/*
+ * Copyright (c) 2019 - Gabriel Cuvillier, Continuation Labs (www.continuation-labs.com)
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * */
+
+#ifndef STDEXT_UNIQUE_CONTAINER_PTR_H
+#define STDEXT_UNIQUE_CONTAINER_PTR_H
+
+// std
+#include <memory>         // std::unique_ptr
+
+namespace stdext {
+
+template<typename T>
+struct container_deleter {
+  void operator()(T *ipContainer) noexcept {
+    if (ipContainer != nullptr) {
+      for (auto *apElement : *ipContainer) {
+        if (apElement != nullptr) {
+          delete apElement;
+          apElement = nullptr;
+        }
+      }
+      delete ipContainer;
+    }
+  }
+};
+
+template<typename T>
+using unique_container_ptr = std::unique_ptr<T, container_deleter<T>>;
+}
+
+#endif

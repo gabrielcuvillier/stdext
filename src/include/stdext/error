@@ -1,0 +1,117 @@
+/*
+ * Copyright (c) 2019 - Gabriel Cuvillier, Continuation Labs (www.continuation-labs.com)
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * */
+
+#ifndef STDEXT_ERROR_H
+#define STDEXT_ERROR_H
+
+// std
+#include <system_error>   // std::error_condition, std::error_category
+#include <string>         // std::string
+
+namespace stdext {
+
+// Template function to convert an enumeration error class to a string
+// It have to be specialized for new error enumerations classes
+template<typename T>
+[[nodiscard]] std::string enum_to_string(T) {
+  return std::string{};
+}
+
+// Enumeration Error Category, parametrized by an error enumeration class
+template<typename T>
+class EnumErrorCategory : public std::error_category {
+ public:
+  [[nodiscard]] static std::error_category const &Singleton() {
+    static EnumErrorCategory<T> g_category;
+    return g_category;
+  }
+
+  [[nodiscard]] const char *name() const noexcept override {
+    return typeid(T).name();
+  }
+
+  [[nodiscard]] std::string message(int ev) const override {
+    return enum_to_string(static_cast<T>(ev));
+  }
+};
+
+// S_OK: alias for "No Error"
+const std::error_condition S_OK;
+
+// InternalError enumeration class
+enum class InternalError {
+  AssertionFailed = 1       // only "AssertionFailed" for now
+};
+
+// Generic error condition creation, parametrized by an error enumeration class
+template<typename T>
+[[nodiscard]] std::error_condition make_error_condition(T err) {
+  return std::error_condition{static_cast<int>(err), EnumErrorCategory<T>::Singleton()};
+}
+
+// Specialization of enum_to_string for InternalError enumeration class
+template<>
+[[nodiscard]] std::string enum_to_string(InternalError err);
+
+template<typename T>
+[[nodiscard]] std::error_condition check_failure(T val,
+                                                 const char *file = __builtin_FILE(),
+                                                 int const line = __builtin_LINE(),
+                                                 const char *func = __builtin_FUNCTION()) {
+  if (!val) {
+    return check_failure(make_error_condition(InternalError::AssertionFailed), file, line, func);
+  } else {
+    return S_OK;
+  }
+}
+
+void PRINTERROR(const char *file, int line, const char *func, const char *message);
+
+template<>
+[[nodiscard]] inline std::error_condition check_failure(std::error_condition val,
+                                                        const char *file,
+                                                        int line,
+                                                        const char *func) {
+  if (val) {
+    PRINTERROR(file, line, func, val.message().c_str());
+  }
+  return val;
+}
+
+void EPICFAIL_RET();
+
+void EPICFAIL_RET_VOID();
+
+void EPICFAIL_RET_INT();
+
+void EPICFAIL_LOOP();
+
+void EPICFAIL_LOOP_BREAK();
+
+void EPICFAIL_NOP();
+
+}
+
+namespace std {
+template<>
+struct is_error_condition_enum<stdext::InternalError> : true_type {
+};
+}
+
+#define ASSERT(expression)            if (std::error_condition err = stdext::check_failure(expression)) { stdext::EPICFAIL_RET(); return err; }
+#define ASSERT_RET_VOID(expression)   if (stdext::check_failure(expression)) { stdext::EPICFAIL_RET_VOID(); return; }
+#define ASSERT_RET_ONE(expression)    if (stdext::check_failure(expression)) { stdext::EPICFAIL_RET_INT(); return 1; }
+#define ASSERT_RET_ZERO(expression)    if (stdext::check_failure(expression)) { stdext::EPICFAIL_RET_INT(); return 0; }
+#define ASSERT_RET_FALSE(expression)    if (stdext::check_failure(expression)) { stdext::EPICFAIL_RET_INT(); return false; }
+#define ASSERT_RET_NULL(expression)    if (stdext::check_failure(expression)) { stdext::EPICFAIL_RET_INT(); return nullptr; }
+#define ASSERT_LOOP(expression)       if (stdext::check_failure(expression)) { stdext::EPICFAIL_LOOP(); continue; }
+#define ASSERT_LOOP_BREAK(expression) if (stdext::check_failure(expression)) { stdext::EPICFAIL_LOOP_BREAK(); break; }
+#define ASSERT_NOP(expression)        if (stdext::check_failure(expression)) { stdext::EPICFAIL_NOP(); (void)0; }
+
+#endif
