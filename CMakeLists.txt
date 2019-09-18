@@ -1,3 +1,6 @@
+# Copyright (c) 2019 - Gabriel Cuvillier, Continuation Labs (www.continuation-labs.com)
+# Licensed under the MIT License.
+
 project(stdext)
 
 cmake_minimum_required(VERSION 3.8.2)
