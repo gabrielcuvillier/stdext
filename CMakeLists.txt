@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 ############
 add_library(stdext STATIC
     src/lib/call_release_func.cpp
+    src/lib/exception_absorb.cpp
     src/lib/error.cpp)
 
 # Includes

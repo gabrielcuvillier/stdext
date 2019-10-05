@@ -1,0 +1,51 @@
+// Copyright (c) 2019 - Gabriel Cuvillier, Continuation Labs (www.continuation-labs.com)
+// Licensed under the MIT License.
+
+#ifndef STDEXT_EXCEPTION_ABSORB_H
+#define STDEXT_EXCEPTION_ABSORB_H
+
+// stdext
+#include <stdext/compiler_support>
+
+// std
+#include <string>
+#include <exception>
+
+namespace stdext {
+
+class _ExceptionAbsorber {
+ private:
+  std::string type_;
+  std::string message_;
+ public:
+  // Constructors
+  _ExceptionAbsorber(std::exception const &) noexcept;
+  // Destructor
+  [[noreturn]] ~_ExceptionAbsorber() noexcept; // [[noreturn]] attribute is crucial there
+
+  // Discared defaults
+  _ExceptionAbsorber(_ExceptionAbsorber const &) = delete;
+  _ExceptionAbsorber(_ExceptionAbsorber &&) = delete;
+  _ExceptionAbsorber &operator=(_ExceptionAbsorber const &) = delete;
+  _ExceptionAbsorber &operator=(_ExceptionAbsorber &&) = delete;
+};
+
+}
+
+#if defined(STDEXT_ABSORB_EXCEPTIONS)
+
+// 'throw' is redefined use _ExceptionAbsorber functionality
+// NB: notice the assignment operator at the end. This is intended, to "absorb" the thrown exception
+#define throw stdext::_ExceptionAbsorber _absorb =
+
+// 'try' is redefined to do nothing
+#define try
+
+// 'catch' is redefined discard the catch expression as well as eliminate the catch block at compile time
+// (thanks to C++17 'if constexpr'), while still defining 'anException' so that the block compiles (thanks to
+// C++17 if with initialization statement)
+#define catch(x) if stdext_IF_CONSTEXPR(std::exception err{}; false)
+
+#endif
+
+#endif
