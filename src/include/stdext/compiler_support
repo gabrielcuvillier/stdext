@@ -1,0 +1,49 @@
+// Copyright (c) 2019 - Gabriel Cuvillier, Continuation Labs (www.continuation-labs.com)
+// Licensed under the MIT License.
+
+#ifndef STDEXT_COMPILER_SUPPORT
+#define STDEXT_COMPILER_SUPPORT
+
+// [[nodiscard]] attribute activation depending on compiler features
+#if defined(__has_cpp_attribute)
+#if __has_cpp_attribute(nodiscard)
+    #define stdext_NODISCARD [[nodiscard]]
+  #else
+    #define stdext_NODISCARD
+  #endif
+#elif defined(__GNUC__)
+  #define stdext_NODISCARD __attribute__ ((warn_unused_result))
+#else
+  #define stdext_NODISCARD
+#endif
+
+// 'if constexpr'
+#if defined(__cplusplus) && (__cplusplus >= 201703L)
+  #if !defined(__MINGW32__) && !defined(__MINGW64__)  // MinGW have troubles with this C++ 17 feature
+    #define Standard_IF_CONSTEXPR constexpr
+  #else
+    #define stdext_IF_CONSTEXPR
+  #endif
+#else
+  #define stdext_IF_CONSTEXPR
+#endif
+
+// code location handling depending on compiler features (WIP)
+#if defined(__clang__)
+  #define stdext_FILE __builtin_FILE()
+  #define stdext_LINE __builtin_LINE()
+  #define stdext_FUNCTION __builtin_FUNCTION()
+#else
+  #define stdext_FILE "<unknown_file>"
+  #define stdext_LINE -1
+  #define stdext_FUNCTION "<unknown_function>"
+#endif
+
+// unused
+#if defined(__GNUC__) || defined(__clang__)
+  #define stdext_UNUSED __attribute__((unused))
+#else
+  #define stdext_UNUSED
+#endif
+
+#endif
