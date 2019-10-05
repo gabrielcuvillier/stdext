@@ -4,16 +4,22 @@
 #ifndef STDEXT_ERROR_H
 #define STDEXT_ERROR_H
 
+// stdext
+#include <stdext/compiler_support>
+
 // std
 #include <system_error>   // std::error_condition, std::error_category
 #include <string>         // std::string
+#include <typeinfo>       // typeid
 
 namespace stdext {
+
+void install_unhandled_exception_handler();
 
 // Template function to convert an enumeration error class to a string
 // It have to be specialized for new error enumerations classes
 template<typename T>
-[[nodiscard]] std::string enum_to_string(T) {
+stdext_NODISCARD std::string enum_to_string(T) {
   return std::string{};
 }
 
@@ -21,22 +27,22 @@ template<typename T>
 template<typename T>
 class EnumErrorCategory : public std::error_category {
  public:
-  [[nodiscard]] static std::error_category const &Singleton() {
+  stdext_NODISCARD static std::error_category const &Singleton() {
     static EnumErrorCategory<T> g_category;
     return g_category;
   }
 
-  [[nodiscard]] const char *name() const noexcept override {
+  stdext_NODISCARD const char *name() const noexcept override {
     return typeid(T).name();
   }
 
-  [[nodiscard]] std::string message(int ev) const override {
+  stdext_NODISCARD std::string message(int ev) const override {
     return enum_to_string(static_cast<T>(ev));
   }
 };
 
-// S_OK: alias for "No Error"
-const std::error_condition S_OK;
+// OK: alias for "No Error"
+const std::error_condition OK;
 
 // InternalError enumeration class
 enum class InternalError {
@@ -45,35 +51,43 @@ enum class InternalError {
 
 // Generic error condition creation, parametrized by an error enumeration class
 template<typename T>
-[[nodiscard]] std::error_condition make_error_condition(T err) {
+stdext_NODISCARD std::error_condition make_error_condition(T err) {
   return std::error_condition{static_cast<int>(err), EnumErrorCategory<T>::Singleton()};
 }
 
 // Specialization of enum_to_string for InternalError enumeration class
 template<>
-[[nodiscard]] std::string enum_to_string(InternalError err);
-
-template<typename T>
-[[nodiscard]] std::error_condition check_failure(T val,
-                                                 const char *file = __builtin_FILE(),
-                                                 int const line = __builtin_LINE(),
-                                                 const char *func = __builtin_FUNCTION()) {
-  if (!val) {
-    return check_failure(make_error_condition(InternalError::AssertionFailed), file, line, func);
-  } else {
-    return S_OK;
-  }
-}
+stdext_NODISCARD std::string enum_to_string(InternalError err);
 
 void PRINTERROR(const char *file, int line, const char *func, const char *message);
 
+template<typename T>
+stdext_NODISCARD std::error_condition check_failure(T val,
+                                                 bool silent = false,
+                                                 const char *file = stdext_FILE,
+                                                 int const line = stdext_LINE,
+                                                 const char *func = stdext_FUNCTION) {
+  if (!val) {
+    std::error_condition new_error = make_error_condition(InternalError::AssertionFailed);
+    if (!silent) {
+      PRINTERROR(file, line, func, new_error.message().c_str());
+    }
+    return new_error;
+  } else {
+    return OK;
+  }
+}
+
 template<>
-[[nodiscard]] inline std::error_condition check_failure(std::error_condition val,
+stdext_NODISCARD inline std::error_condition check_failure(std::error_condition val,
+                                                        bool silent,
                                                         const char *file,
                                                         int line,
                                                         const char *func) {
   if (val) {
-    PRINTERROR(file, line, func, val.message().c_str());
+    if (!silent) {
+      PRINTERROR(file, line, func, val.message().c_str());
+    }
   }
   return val;
 }
