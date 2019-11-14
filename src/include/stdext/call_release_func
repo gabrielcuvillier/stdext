@@ -4,9 +4,10 @@
 #ifndef STDEXT_CALL_RELEASE_FUNC_H
 #define STDEXT_CALL_RELEASE_FUNC_H
 
-namespace stdext {
-
-class call_release_func {
+namespace stdext
+{
+class call_release_func
+{
 public:
   explicit call_release_func( void ( *ipFunc )() = nullptr ) noexcept;
 

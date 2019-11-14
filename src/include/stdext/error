@@ -30,7 +30,10 @@ public:
 
   stdext_NODISCARD const char* name() const noexcept stdext_OVERRIDE { return typeid( T ).name(); }
 
-  stdext_NODISCARD std::string message( int ev ) const stdext_OVERRIDE { return enum_to_string( static_cast<T>( ev ) ); }
+  stdext_NODISCARD std::string message( int ev ) const stdext_OVERRIDE
+  {
+    return enum_to_string( static_cast<T>( ev ) );
+  }
 };
 
 // OK: alias for "No Error"

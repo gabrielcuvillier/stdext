@@ -7,11 +7,13 @@
 // std
 #include <memory>  // std::unique_ptr
 
-namespace stdext {
-
+namespace stdext
+{
 template<typename T>
-struct container_deleter {
-  void operator()( T* ipContainer ) noexcept {
+struct container_deleter
+{
+  void operator()( T* ipContainer ) noexcept
+  {
     if ( ipContainer != nullptr ) {
       for ( auto* apElement : *ipContainer ) {
         if ( apElement != nullptr ) {

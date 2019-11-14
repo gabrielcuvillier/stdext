@@ -10,12 +10,13 @@
 // std
 #include <string>  // std::string
 
-namespace stdext {
-
+namespace stdext
+{
 // Template function to convert an enumeration class to a string
 // It have to be specialized for new enumerations classes
 template<typename T>
-stdext_NODISCARD const char* enum_to_string( T ) {
+stdext_NODISCARD const char* enum_to_string( T )
+{
   return nullptr;
 }
 
