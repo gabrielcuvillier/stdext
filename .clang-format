@@ -1,0 +1,26 @@
+# Common settings
+Language: Cpp
+BasedOnStyle: Chromium
+ColumnLimit: 120
+AccessModifierOffset: -2
+SpaceAfterTemplateKeyword: false
+SpacesInParentheses: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterStruct: true
+  AfterFunction: true
+  AfterNamespace: true
+StatementMacros:
+  - "ASSERT"
+  - "ASSERT_DEBUG"
+  - "ASSERT_RET_VOID"
+  - "ASSERT_RET_ZERO"
+  - "ASSERT_RET_ONE"
+  - "ASSERT_RET_FALSE"
+  - "ASSERT_RET_NULL"
+  - "ASSERT_LOOP"
+  - "ASSERT_LOOP_BREAK"
+  - "ASSERT_NOP"
