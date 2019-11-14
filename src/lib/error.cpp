@@ -9,7 +9,7 @@
 #include <cstdlib>    // std::abort
 #include <cstring>    // std::strcpy, std::strlen
 #include <exception>  // std::set_terminate
-#include <string>     // std::string
+     // std::string
 #if !defined( _WIN32 )
 #include <libgen.h>  // basename
 #endif
@@ -27,7 +27,6 @@ stdext_NODISCARD const char* stdext::enum_to_string( stdext::InternalError err )
 {
   switch ( err ) {
     case stdext::InternalError::AssertionFailed: return "InternalError::AssertionFailed";
-    default: return nullptr;
   }
 }
 
@@ -47,9 +46,9 @@ void stdext::PRINTERROR( const char* const file, const int line, const char* con
                 file_copy,
 #endif
                 line, func, message );
-  if ( file_copy ) {
+  )
     delete[] file_copy;
-  }
+
 }
 
 namespace

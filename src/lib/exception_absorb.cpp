@@ -7,16 +7,15 @@
 // std
 #include <exception>
 #include <iostream>
-#include <string>
 #include <typeinfo>
 
 stdext::_ExceptionAbsorber::_ExceptionAbsorber( std::exception const& err )
 {
-  std::cerr << "Exception thrown: " << typeid(theStdException).name() << ": \"" << theStdException.what()
-            << "\"" << std::endl;
+  std::cerr << "Exception thrown: " << typeid( err ).name() << ": \"" << err.what() << "\""
+            << std::endl;
 }
 
 stdext::_ExceptionAbsorber::~_ExceptionAbsorber()
 {
   std::terminate();  // Ideally, std::set_terminate should be set by the main application
-};
+}
