@@ -10,13 +10,13 @@
 #include <string>
 #include <typeinfo>
 
-stdext::_ExceptionAbsorber::_ExceptionAbsorber( std::exception const& err ) noexcept
-    : type_( typeid( err ).name() ), message_( err.what() )
+stdext::_ExceptionAbsorber::_ExceptionAbsorber( std::exception const& err )
 {
+  std::cerr << "Exception thrown: " << typeid(theStdException).name() << ": \"" << theStdException.what()
+            << "\"" << std::endl;
 }
 
-stdext::_ExceptionAbsorber::~_ExceptionAbsorber() noexcept
+stdext::_ExceptionAbsorber::~_ExceptionAbsorber()
 {
-  std::cerr << type_ << ": " << message_ << std::endl;
   std::terminate();  // Ideally, std::set_terminate should be set by the main application
 };

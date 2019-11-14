@@ -9,21 +9,16 @@
 
 // std
 #include <exception>
-#include <string>
 
 namespace stdext
 {
 class _ExceptionAbsorber
 {
-private:
-  std::string type_;
-  std::string message_;
-
 public:
   // Constructors
-  _ExceptionAbsorber( std::exception const& ) noexcept;
+  _ExceptionAbsorber( std::exception const& );
   // Destructor
-  [[noreturn]] ~_ExceptionAbsorber() noexcept;  // [[noreturn]] attribute is crucial there
+  [[noreturn]] ~_ExceptionAbsorber();  // [[noreturn]] attribute is crucial there
 
   // Discared defaults
   _ExceptionAbsorber( _ExceptionAbsorber const& ) = delete;
