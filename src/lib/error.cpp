@@ -9,7 +9,6 @@
 #include <cstdlib>    // std::abort
 #include <cstring>    // std::strcpy, std::strlen
 #include <exception>  // std::set_terminate
-     // std::string
 #if !defined( _WIN32 )
 #include <libgen.h>  // basename
 #endif
@@ -46,9 +45,7 @@ void stdext::PRINTERROR( const char* const file, const int line, const char* con
                 file_copy,
 #endif
                 line, func, message );
-  )
-    delete[] file_copy;
-
+  delete[] file_copy;
 }
 
 namespace
