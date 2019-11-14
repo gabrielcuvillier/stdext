@@ -1,0 +1,24 @@
+// Copyright (c) 2019 - Gabriel Cuvillier, Continuation Labs (www.continuation-labs.com)
+// Licensed under the MIT License.
+
+#ifndef STDEXT_ENUM_TO_STRING_H
+#define STDEXT_ENUM_TO_STRING_H
+
+// stdext
+#include <stdext/compiler_support>  // stdext_NODISCARD
+
+// std
+#include <string>  // std::string
+
+namespace stdext {
+
+// Template function to convert an enumeration class to a string
+// It have to be specialized for new enumerations classes
+template<typename T>
+stdext_NODISCARD const char* enum_to_string( T ) {
+  return nullptr;
+}
+
+}  // namespace stdext
+
+#endif

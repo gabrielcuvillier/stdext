@@ -5,16 +5,16 @@
 #define STDEXT_UNIQUE_CONTAINER_PTR_H
 
 // std
-#include <memory>         // std::unique_ptr
+#include <memory>  // std::unique_ptr
 
 namespace stdext {
 
 template<typename T>
 struct container_deleter {
-  void operator()(T *ipContainer) noexcept {
-    if (ipContainer != nullptr) {
-      for (auto *apElement : *ipContainer) {
-        if (apElement != nullptr) {
+  void operator()( T* ipContainer ) noexcept {
+    if ( ipContainer != nullptr ) {
+      for ( auto* apElement : *ipContainer ) {
+        if ( apElement != nullptr ) {
           delete apElement;
           apElement = nullptr;
         }
@@ -26,6 +26,6 @@ struct container_deleter {
 
 template<typename T>
 using unique_container_ptr = std::unique_ptr<T, container_deleter<T>>;
-}
+}  // namespace stdext
 
 #endif
