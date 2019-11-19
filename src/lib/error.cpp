@@ -9,8 +9,11 @@
 #include <cstdlib>    // std::abort
 #include <cstring>    // std::strcpy, std::strlen
 #include <exception>  // std::set_terminate
-#if !defined( _WIN32 )
-#include <libgen.h>  // basename
+#if !defined( __MINGW32__ )
+#include <filesystem>  // std::filesystem
+#else
+// std::filesystem::path is buggy for now on MinGW, so use regular POSIX libgen functions
+#include <libgen.h>
 #endif
 
 void stdext::install_unhandled_exception_handler()
@@ -31,21 +34,22 @@ stdext_NODISCARD const char* stdext::enum_to_string( stdext::InternalError err )
 
 void stdext::PRINTERROR( const char* const file, const int line, const char* const func, const char* const message )
 {
-  char* file_copy = nullptr;
-  if ( file ) {
-    const auto sz = std::strlen( file );
-    file_copy = new char[sz + 1];
-    file_copy[sz] = 0;
-    std::strcpy( file_copy, file );
-  }
-  std::fprintf( stdout, "Failure at %s:%d: function ‘%s‘: '%s'",
-#if !defined( _WIN32 )
-                basename( file_copy ),
+#if !defined( __MINGW32__ )
+  std::fprintf( stdout, "Failure at %s:%d: function ‘%s‘: '%s'", std::filesystem::path( file ).filename().c_str(), line,
+                func, message );
 #else
-                file_copy,
+  char* str = nullptr;
+  if ( file ) {
+    str = new char[std::strlen( file ) + 1];
+    str[std::strlen( file )] = 0;
+    std::strcpy( str, file );
+  } else {
+    str = new char[1];
+    str[0] = 0;
+  }
+  std::fprintf( stdout, "Failure at %s:%d: function ‘%s‘: '%s'", basename( str ), line, func, message );
+  delete[] str;
 #endif
-                line, func, message );
-  delete[] file_copy;
 }
 
 namespace
