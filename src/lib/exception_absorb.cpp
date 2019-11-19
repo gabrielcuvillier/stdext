@@ -5,14 +5,13 @@
 #include <stdext/exception_absorb>
 
 // std
-#include <exception>
-#include <iostream>
-#include <typeinfo>
+#include <cstdio>     // std::fprintf, stdout, stderr
+#include <exception>  // std::exception
+#include <typeinfo>   // typeid
 
 stdext::_ExceptionAbsorber::_ExceptionAbsorber( std::exception const& err )
 {
-  std::cerr << "Exception thrown: " << typeid( err ).name() << ": \"" << err.what() << "\""
-            << std::endl;
+  std::fprintf( stderr, "Exception thrown: %s: \"%s\"\n", typeid( err ).name(), err.what() );
 }
 
 stdext::_ExceptionAbsorber::~_ExceptionAbsorber()
