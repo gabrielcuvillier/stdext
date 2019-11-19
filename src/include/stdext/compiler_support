@@ -24,10 +24,10 @@
 #define stdext_IF_CONSTEXPR
 #endif
 
-#if defined(__cplusplus) && (__cplusplus >= 201703L)
+#if defined( __cplusplus ) && ( __cplusplus >= 201703L )
 #define stdext_FALLTHROUGH [[fallthrough]];
-#elif defined(__GNUC__) && (__GNUC__ >= 7)
-#define stdext_FALLTHROUGH __attribute__((fallthrough));
+#elif defined( __GNUC__ ) && ( __GNUC__ >= 7 )
+#define stdext_FALLTHROUGH __attribute__( ( fallthrough ) );
 #else
 #define stdext_FALLTHROUGH
 #endif
@@ -43,16 +43,16 @@
 #define stdext_FUNCTION "<unknown_function>"
 #endif
 
-#if defined(__cplusplus) && (__cplusplus >= 201100L)
+#if defined( __cplusplus ) && ( __cplusplus >= 201100L )
 #define stdext_OVERRIDE override
-#elif defined(_MSC_VER) && (_MSC_VER >= 1700)
+#elif defined( _MSC_VER ) && ( _MSC_VER >= 1700 )
 #define stdext_OVERRIDE override
 #else
 #define stdext_OVERRIDE
 #endif
 
-#if defined(__cplusplus) && (__cplusplus >= 201703L)
-#if defined(_MSC_VER)
+#if defined( __cplusplus ) && ( __cplusplus >= 201703L )
+#if defined( _MSC_VER )
 #define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 #endif

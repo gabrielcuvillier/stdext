@@ -7,9 +7,6 @@
 // stdext
 #include <stdext/compiler_support>  // stdext_NODISCARD
 
-// std
-#include <string>  // std::string
-
 namespace stdext
 {
 // Template function to convert an enumeration class to a string
