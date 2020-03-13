@@ -100,7 +100,7 @@ std::string get_directory_name( std::string path )
   }
 #elif defined( __linux__ ) || defined( __gnu_linux__ ) || defined( __MSYS__ ) || defined( __CYGWIN__ ) || \
     defined( __MINGW32__ ) || defined( __EMSCRIPTEN__ ) || defined( __unix__ )
-  return safe_apply_to_str< ::dirname>( path );
+  return safe_apply_to_str< ::dirname>( std::move( path ) );
 #else
 #error "std::filesystem not implemented for current platform"
 #endif
