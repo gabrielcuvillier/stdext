@@ -97,7 +97,7 @@ if (COMPILER_MSVC)
   if (COMPILER_CLANG)
     add_compile_options(-Wno-c++98-compat)
     add_compile_options(-Wno-global-constructors)
-  endif()
+  endif ()
 endif ()
 
 if (PLATFORM_EMSCRIPTEN)
@@ -190,18 +190,17 @@ endif ()
 # libstdext
 ###########"
 add_library(stdext STATIC
-        lib/stdext_compiler_id.cpp
-        lib/call_release_func.cpp
-        lib/exception_absorb.cpp
-        lib/uuid.cpp
-        lib/fs.cpp
-        lib/error.cpp)
+    lib/stdext_compiler_id.cpp
+    lib/call_release_func.cpp
+    lib/exception_absorb.cpp
+    lib/uuid.cpp
+    lib/fs.cpp
+    lib/error.cpp)
 
 # Includes
 target_include_directories(stdext
-        PUBLIC include
-        PRIVATE include/stdext
-        PRIVATE include_private)
+    PUBLIC include
+    PRIVATE include_private)
 
 if (PLATFORM_EMSCRIPTEN)
   target_link_libraries(stdext PUBLIC uuid.js)    # uuid functions

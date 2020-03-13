@@ -1,5 +1,8 @@
 // Copyright (c) 2019 - Gabriel Cuvillier, Continuation Labs (www.continuation-labs.com)
 // Licensed under the MIT License.
+
+#if 0   // Enable to check the compiler predefined macros
+
 #include <climits>
 
 // OS
@@ -67,4 +70,6 @@
 #endif
 #if defined( __STDC__ )
 #pragma message( "__STDC__" )
+#endif
+
 #endif
