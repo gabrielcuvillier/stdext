@@ -62,10 +62,10 @@ std::string get_current_directory()
 int change_current_directory( std::string path )
 {
 #if defined( _WIN32 ) && !defined( __MINGW32__ )
-  return ::_chdir( get_directory_name( path ).c_str() );
+  return ::_chdir( path.c_str() );
 #elif defined( __linux__ ) || defined( __gnu_linux__ ) || defined( __MSYS__ ) || defined( __CYGWIN__ ) || \
     defined( __MINGW32__ ) || defined( __EMSCRIPTEN__ ) || defined( __unix__ )
-  return ::chdir( get_directory_name( path ).c_str() );
+  return ::chdir( path.c_str() );
 #else
 #error "std::filesystem not implemented for current platform"
 #endif
