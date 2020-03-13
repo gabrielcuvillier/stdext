@@ -17,8 +17,9 @@
 #elif defined( __linux__ ) || defined( __gnu_linux__ ) || defined( __MSYS__ ) || defined( __CYGWIN__ ) || \
     defined( __MINGW32__ ) || defined( __EMSCRIPTEN__ ) || defined( __unix__ )
 #include <libgen.h>  // basename, dirname
-#include <limits.h>  // PATH_MAX
 #include <unistd.h>  // chdir, getcwd
+
+#include <climits>  // PATH_MAX
 #else
 #error "std::filesystem not implemented for current platform"
 #endif
@@ -45,7 +46,7 @@ namespace stdext
 std::string get_current_directory()
 {
 #if defined( _WIN32 ) && !defined( __MINGW32__ )
-  auto buf = new char[MAX_PATH];
+  auto buf = new char[PATH_MAX];
   buf = ::_getcwd( buf, MAX_PATH );
 #elif defined( __linux__ ) || defined( __gnu_linux__ ) || defined( __MSYS__ ) || defined( __CYGWIN__ ) || \
     defined( __MINGW32__ ) || defined( __EMSCRIPTEN__ ) || defined( __unix__ )
@@ -77,7 +78,7 @@ std::string get_file_name( std::string path )
   return std::string( ::PathFindFileNameA( path.c_str() ) );
 #elif defined( __linux__ ) || defined( __gnu_linux__ ) || defined( __MSYS__ ) || defined( __CYGWIN__ ) || \
     defined( __MINGW32__ ) || defined( __EMSCRIPTEN__ ) || defined( __unix__ )
-  return safe_apply_to_str< ::basename>( path );
+  return safe_apply_to_str< ::basename>( std::move( path ) );
 #else
 #error "std::filesystem not implemented for current platform"
 #endif
