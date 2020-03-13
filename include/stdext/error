@@ -13,8 +13,8 @@
 #include <system_error>  // std::error_condition, std::error_category
 #include <typeinfo>      // typeid
 
-#if defined( _WIN32 )    // also includes MinGW
-#include <windows.h>     // HRESULT, FAILED
+#if defined( _WIN32 )  // also includes MinGW
+#include <windows.h>   // HRESULT, SUCCEEDED
 #endif
 
 namespace stdext
@@ -60,7 +60,9 @@ template<>
 template<typename T>
 [[nodiscard]] inline bool check_valid( T val )
 {
-  return !val;
+  // Use the !! hack ("not not") => will first convert to bool the object using ! operator (true = failure, false =
+  // success), and then negate the bool
+  return !!val;
 }
 
 // Specialization for std::error_condition
@@ -68,7 +70,7 @@ template<>
 [[nodiscard]] inline bool check_valid( std::error_condition val )
 {
   // NB: this is not very intuitive: a std::error_condition is valid if it is stdext::OK (0)
-  return ( val == stdext::OK ) ? false : true;
+  return ( val == stdext::OK );
 }
 
 #if defined( _WIN32 )  // also includes MinGW
@@ -76,8 +78,8 @@ template<>
 template<>
 [[nodiscard]] inline bool check_valid( HRESULT val )
 {
-  // NB: this is not very intuitive: a HRESULT is valid if it is S_OK (0) or S_FALSE (1) => use FAILED macro
-  return ( FAILED(val) ) ? false : true;
+  // NB: this is not very intuitive: a HRESULT is valid if it is S_OK (0) or S_FALSE (1) => use SUCCEEDED macro
+  return ( SUCCEEDED( val ) );
 }
 #endif
 
