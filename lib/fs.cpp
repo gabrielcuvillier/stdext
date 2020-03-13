@@ -18,7 +18,6 @@
     defined( __MINGW32__ ) || defined( __EMSCRIPTEN__ ) || defined( __unix__ )
 #include <libgen.h>  // basename, dirname
 #include <unistd.h>  // chdir, getcwd
-
 #include <climits>  // PATH_MAX
 #else
 #error "std::filesystem not implemented for current platform"
@@ -46,7 +45,7 @@ namespace stdext
 std::string get_current_directory()
 {
 #if defined( _WIN32 ) && !defined( __MINGW32__ )
-  auto buf = new char[PATH_MAX];
+  auto buf = new char[MAX_PATH];
   buf = ::_getcwd( buf, MAX_PATH );
 #elif defined( __linux__ ) || defined( __gnu_linux__ ) || defined( __MSYS__ ) || defined( __CYGWIN__ ) || \
     defined( __MINGW32__ ) || defined( __EMSCRIPTEN__ ) || defined( __unix__ )

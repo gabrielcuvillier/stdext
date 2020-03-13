@@ -14,7 +14,7 @@
 #include <typeinfo>      // typeid
 
 #if defined( _WIN32 )  // also includes MinGW
-#include <windows.h>   // HRESULT, SUCCEEDED
+#include <Windows.h>   // HRESULT, SUCCEEDED
 #endif
 
 namespace stdext

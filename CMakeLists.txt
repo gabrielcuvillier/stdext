@@ -93,10 +93,10 @@ endif ()
 
 if (COMPILER_MSVC)
   add_compile_options(/Zc:__cplusplus)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   if (COMPILER_CLANG)
     add_compile_options(-Wno-c++98-compat)
     add_compile_options(-Wno-global-constructors)
-    add_compile_options(-Wextra)
   endif()
 endif ()
 
