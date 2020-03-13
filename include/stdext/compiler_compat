@@ -1,0 +1,49 @@
+// Copyright (c) 2019 - Gabriel Cuvillier, Continuation Labs (www.continuation-labs.com)
+// Licensed under the MIT License.
+
+#ifndef STDEXT_COMPILER_COMPAT_H
+#define STDEXT_COMPILER_COMPAT_H
+
+#if ( __cplusplus < 201703L )
+#error "C++ 17 needs to be supported by compiler"
+#endif
+
+// code source location handling depending on compiler features (WIP)
+#if __has_include( <source_location> )
+#include <source_location>
+#define stdext_FILE std::source_location::current().file_name()
+#define stdext_LINE std::source_location::current().line()
+#define stdext_FUNCTION std::source_location::current().function_name()
+#define stdext_COLUMN std::source_location::current().column_name()
+
+#elif __has_include( <experimental/source_location> ) \
+&&( ( defined( __clang__ ) && ( __clang_major__ > 8 ) ) || ( defined( __GNUC__ ) && !defined( __clang__ ) ) )
+#include <experimental/source_location>
+#define stdext_FILE std::experimental::source_location::current().file_name()
+#define stdext_LINE std::experimental::source_location::current().line()
+#define stdext_FUNCTION std::experimental::source_location::current().function_name()
+#define stdext_COLUMN std::experimental::source_location::current().column()
+
+#elif ( defined( __clang__ ) && ( __clang_major__ > 8 ) ) || ( defined( __GNUC__ ) && !defined( __clang__ ) )
+#define stdext_FILE __builtin_FILE()
+#define stdext_LINE __builtin_LINE()
+#define stdext_FUNCTION __builtin_FUNCTION()
+#if !defined( __GNUC__ )
+#define stdext_COLUMN __builtin_COLUMN()
+#else
+#define stdext_COLUMN -1
+#endif
+#else
+#define stdext_FILE "<unknown_file>"
+#define stdext_LINE -1
+#define stdext_COLUMN -1
+#define stdext_FUNCTION "<unknown_function>"
+#endif
+
+#if defined( _MSC_VER )
+#if !defined( __clang__ )
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS 1
+#endif
+#endif
+
+#endif

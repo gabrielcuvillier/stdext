@@ -4,6 +4,9 @@
 #ifndef STDEXT_UUID_H
 #define STDEXT_UUID_H
 
+#include <stdext/stdext>
+
+// std
 #include <string>
 
 namespace stdext

@@ -5,18 +5,14 @@
 #define STDEXT_ENUM_TO_STRING_H
 
 // stdext
-#include <stdext/compiler_support>  // stdext_NODISCARD
+#include <stdext/stdext>
 
 namespace stdext
 {
 // Template function to convert an enumeration class to a string
 // It have to be specialized for new enumerations classes
 template<typename T>
-stdext_NODISCARD const char* enum_to_string( T )
-{
-  return nullptr;
-}
-
+[[nodiscard]] const char* enum_to_string( T );
 }  // namespace stdext
 
 #endif

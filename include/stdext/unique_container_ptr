@@ -4,6 +4,8 @@
 #ifndef STDEXT_UNIQUE_CONTAINER_PTR_H
 #define STDEXT_UNIQUE_CONTAINER_PTR_H
 
+#include <stdext/stdext>
+
 // std
 #include <memory>  // std::unique_ptr
 

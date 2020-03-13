@@ -1,5 +1,10 @@
-# Default ignored files
-/workspace.xml
-.idea/
-build-*/
-cmake-build*/
+# CMake build output
+/build-*/
+/cmake-build*/
+
+# Misc
+.DS_Store
+.log
+
+# IDE
+.idea

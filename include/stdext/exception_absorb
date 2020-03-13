@@ -5,7 +5,7 @@
 #define STDEXT_EXCEPTION_ABSORB_H
 
 // stdext
-#include <stdext/compiler_support>
+#include <stdext/stdext>
 
 // std
 #include <exception>
@@ -31,17 +31,23 @@ public:
 
 #if defined( STDEXT_ABSORB_EXCEPTIONS )
 
+#if !defined( throw )
 // 'throw' is redefined use _ExceptionAbsorber functionality
 // NB: notice the assignment operator at the end. This is intended, to "absorb" the thrown exception
 #define throw stdext::_ExceptionAbsorber _absorb =
+#endif
 
+#if !defined( try )
 // 'try' is redefined to do nothing
 #define try
+#endif
 
+#if !defined( catch )
 // 'catch' is redefined discard the catch expression as well as eliminate the catch block at compile time
 // (thanks to C++17 'if constexpr'), while still defining 'anException' so that the block compiles (thanks to
 // C++17 if with initialization statement)
-#define catch ( x ) if stdext_IF_CONSTEXPR( std::exception err{}; false )
+#define catch ( x ) if constexpr ( std::exception err{}; false )
+#endif
 
 #endif
 
