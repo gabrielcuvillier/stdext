@@ -37,9 +37,6 @@ public:
   [[nodiscard]] std::string message( int ev ) const override { return enum_to_string( static_cast<T>( ev ) ); }
 };
 
-// OK: alias for "No Error"
-const inline std::error_condition OK;
-
 // InternalError enumeration class
 enum class InternalError {
   AssertionFailed = 1  // only "AssertionFailed" for now
@@ -69,8 +66,8 @@ template<typename T>
 template<>
 [[nodiscard]] inline bool check_valid( std::error_condition val )
 {
-  // NB: this is not very intuitive: a std::error_condition is valid if it is stdext::OK (0)
-  return ( val == stdext::OK );
+  // NB: this is not very intuitive: a std::error_condition is valid if it is 0
+  return ( val == std::error_condition() );
 }
 
 #if defined( _WIN32 )  // also includes MinGW
@@ -100,7 +97,7 @@ template<typename T>
     }
     return new_error;
   } else {
-    return stdext::OK;
+    return std::error_condition();
   }
 }
 

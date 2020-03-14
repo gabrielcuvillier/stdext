@@ -40,10 +40,4 @@
 #define stdext_FUNCTION "<unknown_function>"
 #endif
 
-#if defined( _MSC_VER )
-#if !defined( __clang__ )
-#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS 1
-#endif
-#endif
-
 #endif

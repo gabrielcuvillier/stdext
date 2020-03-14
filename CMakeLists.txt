@@ -33,7 +33,7 @@ if (WIN32)
       # MSVC
       SET(COMPILER_MSVC 1)
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-      # MSVC+Clang
+      # Set both: MSVC+Clang
       SET(COMPILER_MSVC 1)
       SET(COMPILER_CLANG 1)
     endif ()
@@ -72,31 +72,41 @@ endif ()
 # Customizable Options
 ##########################
 
-# Use 'O1' optimization level instead of O2 for RelWithDebInfo (default=ON)
-set(ENABLE_O1 ON CACHE BOOL "Enable O1 build for RelWithDebInfo")
-# Use LTO for MinSizeRel (default=OFF)
-set(ENABLE_LTO OFF CACHE BOOL "Enable LTO")
+# Use 'O1' optimization level instead of O0 for Debug (default=OFF)
+set(ENABLE_O1 OFF CACHE BOOL "Enable O1 build for Debug")
 # Use 'Oz' optimization level instead of Os for MinSizeRel (default=OFF)
 set(ENABLE_OZ OFF CACHE BOOL "Enable Oz build for MinSizeRel")
 # Use 'O3' optimization level instead of O2 fo Release (default=OFF)
 set(ENABLE_O3 OFF CACHE BOOL "Enable O3 build for Release")
+# Use LTO for MinSizeRel (default=OFF)
+set(ENABLE_LTO OFF CACHE BOOL "Enable LTO")
 
 ##########################
 # Setup compilation flags
 ##########################
 
 # Enable all warnings
-if (COMPILER_CLANG OR COMPILER_GCC)
+if ((COMPILER_CLANG AND NOT COMPILER_MSVC) OR COMPILER_GCC)
   add_compile_options(-Wall)
   add_compile_options(-Wextra)
 endif ()
 
 if (COMPILER_MSVC)
+  # be sure to have "__cplusplus" macro to correctly report C++ version
   add_compile_options(/Zc:__cplusplus)
+  # disable the annoying CRT secure warnings and various C++17 deprecation warnings
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-  if (COMPILER_CLANG)
-    add_compile_options(-Wno-c++98-compat)
-    add_compile_options(-Wno-global-constructors)
+  add_definitions(-D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
+  # increase warning level
+  if (CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+    string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  else ()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+  endif ()
+  if (CMAKE_C_FLAGS MATCHES "/W[0-4]")
+    string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+  else ()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4")
   endif ()
 endif ()
 
@@ -114,8 +124,9 @@ if (ENABLE_LTO)
   endif ()
 endif ()
 
-# Oz and MinSizeRel
-if (ENABLE_OZ AND COMPILER_CLANG)
+set(ENABLE_OZ OFF CACHE BOOL "Enable Oz build for MinSizeRel")
+if (ENABLE_OZ AND ("${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel") AND COMPILER_CLANG)
+  # Use 'Oz' optimization level (instead of Os)
   string(REGEX MATCH "-Os" IS_Os_CXX "${CMAKE_CXX_FLAGS_MINSIZEREL}")
   if (IS_Os_CXX)
     string(REGEX REPLACE "-Os" "-Oz" CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL}")
@@ -129,17 +140,24 @@ if (ENABLE_OZ AND COMPILER_CLANG)
   else ()
     set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -Oz")
   endif ()
+endif ()
 
-  string(REGEX MATCH "-Os" IS_Os_EXE "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL}")
-  if (IS_Os_EXE)
-    string(REGEX REPLACE "-Os" "-Oz" CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL}")
-  else ()
-    set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} -Oz")
+# Properly setup RelWithDebInfo
+if (("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo") AND (COMPILER_CLANG OR COMPILER_GCC))
+  string(REGEX MATCH "-g" IS_g_CXX "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+  if (NOT IS_g_CXX)
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -g")
+  endif ()
+
+  string(REGEX MATCH "-g" IS_g_C "${CMAKE_CC_FLAGS_RELWITHDEBINFO}")
+  if (NOT IS_g_C)
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -g")
   endif ()
 endif ()
 
-# O3 and Release
-if (ENABLE_O3 AND (COMPILER_CLANG OR COMPILER_GCC))
+set(ENABLE_O3 OFF CACHE BOOL "Enable O3 build for Release")
+if (ENABLE_O3 AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Release") AND (COMPILER_CLANG OR COMPILER_GCC))
+  # Use 'O3' optimization level (instead of O2)
   string(REGEX MATCH "-O2" IS_O2_CXX "${CMAKE_CXX_FLAGS_RELEASE}")
   if (IS_O2_CXX)
     string(REGEX REPLACE "-O2" "-O3" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -153,36 +171,23 @@ if (ENABLE_O3 AND (COMPILER_CLANG OR COMPILER_GCC))
   else ()
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
   endif ()
-
-  string(REGEX MATCH "-O2" IS_O2_EXE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
-  if (IS_O2_EXE)
-    string(REGEX REPLACE "-O2" "-O3" CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
-  else ()
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -O3")
-  endif ()
 endif ()
 
-# O1 and RelWithDebInfo
-if (ENABLE_O1 AND (COMPILER_CLANG OR COMPILER_GCC))
-  string(REGEX MATCH "-O2" IS_O2_CXX "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-  if (IS_O2_CXX)
-    string(REGEX REPLACE "-O2" "-O1" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+set(ENABLE_O1 OFF CACHE BOOL "Enable O1 build for Debug")
+if (ENABLE_O1 AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug") AND (COMPILER_CLANG OR COMPILER_GCC))
+  # Use 'O1' optimization level (instead of O0)
+  string(REGEX MATCH "-O0" IS_O0_CXX "${CMAKE_CXX_FLAGS_DEBUG}")
+  if (IS_O0_CXX)
+    string(REGEX REPLACE "-O0" "-O1" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
   else ()
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O1")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O1")
   endif ()
 
-  string(REGEX MATCH "-O2" IS_O2_C "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
-  if (IS_O2_C)
-    string(REGEX REPLACE "-O2" "-O1" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+  string(REGEX MATCH "-O0" IS_O0_C "${CMAKE_C_FLAGS_DEBUG}")
+  if (IS_O0_C)
+    string(REGEX REPLACE "-O0" "-O1" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
   else ()
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -O1")
-  endif ()
-
-  string(REGEX MATCH "-O2" IS_O2_EXE "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
-  if (IS_O2_EXE)
-    string(REGEX REPLACE "-O2" "-O1" CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
-  else ()
-    set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} -O1")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O1")
   endif ()
 endif ()
 
@@ -203,12 +208,17 @@ target_include_directories(stdext
     PRIVATE include_private)
 
 if (PLATFORM_EMSCRIPTEN)
-  target_link_libraries(stdext PUBLIC uuid.js)    # uuid functions
+  # uuid
+  target_link_libraries(stdext PUBLIC uuid.js)
 elseif (PLATFORM_UNIX)
-  target_link_libraries(stdext PUBLIC uuid)       # uuid functions
+  # uuid
+  target_link_libraries(stdext PUBLIC uuid)
 elseif (PLATFORM_WINDOWS)
-  target_link_libraries(stdext PUBLIC rpcrt4)     # uuid functions
-  if (COMPILER_MSVC)
-    target_link_libraries(stdext PUBLIC shlwapi)  # filesystem-related functions
+  # uuid
+  target_link_libraries(stdext PUBLIC rpcrt4)
+  # filesystem-related
+  # NB: not on MinGW, as UNIX compatibility layer is used
+  if (NOT MINGW)
+    target_link_libraries(stdext PUBLIC shlwapi)
   endif ()
 endif ()
