@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 // Main header
-#include <stdext/fs>
+// #include <stdext/fs>
 
 // std
 #include <cstring>  // std::strcpy
@@ -29,7 +29,7 @@ namespace
 #if defined( __linux__ ) || defined( __gnu_linux__ ) || defined( __MSYS__ ) || defined( __CYGWIN__ ) || \
     defined( __MINGW32__ ) || defined( __EMSCRIPTEN__ ) || defined( __unix__ )
 template<char* ( *F )( char* )>
-std::string safe_apply_to_str( std::string str )
+std::string safe_apply_to_str( std::string const& str )
 {
   auto psz_tmp = new char[str.size() + 1];
   psz_tmp[str.size()] = 0;
@@ -60,7 +60,7 @@ std::string get_current_directory()
   return result_str;
 }
 
-int change_current_directory( std::string path )
+int change_current_directory( std::string const& path )
 {
 #if defined( _WIN32 ) && !defined( __MINGW32__ )
   return ::_chdir( path.c_str() );
@@ -72,19 +72,19 @@ int change_current_directory( std::string path )
 #endif
 }
 
-std::string get_file_name( std::string path )
+std::string get_file_name( std::string const& path )
 {
 #if defined( _WIN32 ) && !defined( __MINGW32__ )
   return std::string( ::PathFindFileNameA( path.c_str() ) );
 #elif defined( __linux__ ) || defined( __gnu_linux__ ) || defined( __MSYS__ ) || defined( __CYGWIN__ ) || \
     defined( __MINGW32__ ) || defined( __EMSCRIPTEN__ ) || defined( __unix__ )
-  return safe_apply_to_str< ::basename>( std::move( path ) );
+  return safe_apply_to_str< ::basename>( path );
 #else
 #error "std::filesystem not implemented for current platform"
 #endif
 }
 
-std::string get_directory_name( std::string path )
+std::string get_directory_name( std::string const& path )
 {
 #if defined( _WIN32 ) && !defined( __MINGW32__ )
   auto psz_tmp = new char[path.size() + 1];
@@ -96,11 +96,11 @@ std::string get_directory_name( std::string path )
     return result_str;
   } else {
     delete[] psz_tmp;
-    return std::string( nullptr );
+    return std::string();
   }
 #elif defined( __linux__ ) || defined( __gnu_linux__ ) || defined( __MSYS__ ) || defined( __CYGWIN__ ) || \
     defined( __MINGW32__ ) || defined( __EMSCRIPTEN__ ) || defined( __unix__ )
-  return safe_apply_to_str< ::dirname>( std::move( path ) );
+  return safe_apply_to_str< ::dirname>( path );
 #else
 #error "std::filesystem not implemented for current platform"
 #endif

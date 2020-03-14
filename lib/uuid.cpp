@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 // Main header
-#include <stdext/uuid>
+// #include <stdext/uuid>
 
 // std
 #include <string>  // std::string
@@ -20,7 +20,9 @@
 #error "UUID generation not implemented for current platform"
 #endif
 
-std::string stdext::gen_uuid_string()
+namespace stdext
+{
+std::string gen_uuid_string()
 {
 #if defined( _WIN32 )  // also includes MinGW
   UUID uuid;
@@ -43,3 +45,4 @@ std::string stdext::gen_uuid_string()
 #error "UUID generation not implemented for current platform"
 #endif
 }
+}  // namespace stdext
