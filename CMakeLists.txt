@@ -124,7 +124,6 @@ if (ENABLE_LTO)
   endif ()
 endif ()
 
-set(ENABLE_OZ OFF CACHE BOOL "Enable Oz build for MinSizeRel")
 if (ENABLE_OZ AND ("${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel") AND COMPILER_CLANG)
   # Use 'Oz' optimization level (instead of Os)
   string(REGEX MATCH "-Os" IS_Os_CXX "${CMAKE_CXX_FLAGS_MINSIZEREL}")
@@ -155,7 +154,6 @@ if (("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo") AND (COMPILER_CLANG OR COM
   endif ()
 endif ()
 
-set(ENABLE_O3 OFF CACHE BOOL "Enable O3 build for Release")
 if (ENABLE_O3 AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Release") AND (COMPILER_CLANG OR COMPILER_GCC))
   # Use 'O3' optimization level (instead of O2)
   string(REGEX MATCH "-O2" IS_O2_CXX "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -173,7 +171,6 @@ if (ENABLE_O3 AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Release") AND (COMPILER_CLANG
   endif ()
 endif ()
 
-set(ENABLE_O1 OFF CACHE BOOL "Enable O1 build for Debug")
 if (ENABLE_O1 AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug") AND (COMPILER_CLANG OR COMPILER_GCC))
   # Use 'O1' optimization level (instead of O0)
   string(REGEX MATCH "-O0" IS_O0_CXX "${CMAKE_CXX_FLAGS_DEBUG}")
