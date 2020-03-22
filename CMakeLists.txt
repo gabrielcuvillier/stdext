@@ -82,7 +82,13 @@ set(ENABLE_O3 OFF CACHE BOOL "Enable O3 build for Release")
 # Use LTO for MinSizeRel (default=OFF)
 set(ENABLE_LTO OFF CACHE BOOL "Enable LTO")
 
-set(USE_CPP_FILESYSTEM_BACKEND CACHE BOOL "Use std::filesystem backend" ON)
+set(USE_CPP_FILESYSTEM_BACKEND ON CACHE BOOL "Use std::filesystem backend")
+
+set(DISABLE_EXCEPTIONS OFF CACHE BOOL "Disable Exception Handling")
+
+if (PLATFORM_EMSCRIPTEN)
+  set(DISABLE_EXCEPTIONS ON FORCE)
+endif ()
 
 ##########################
 # Setup compilation flags
@@ -118,10 +124,14 @@ if (COMPILER_MSVC)
 endif ()
 
 if (PLATFORM_EMSCRIPTEN)
-  # disable exception support
-  add_compile_options(-fno-exceptions)
   # enable Emscripten STRICT mode for compilation
   add_compile_options(-s STRICT=1)
+endif ()
+
+if (DISABLE_EXCEPTIONS)
+  # disable exception support
+  add_compile_options(-fno-exceptions)
+  #add_definitions(-DSTDEXT_ABSORB_EXCEPTIONS)
 endif ()
 
 # LTO
