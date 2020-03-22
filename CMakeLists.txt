@@ -233,6 +233,6 @@ target_include_directories(test_main
 
 target_link_libraries(test_main stdext)
 
-if (PLATFORM_UNIX AND COMPILER_CLANG)
-  target_link_libraries(test_main stdc++ m)
+if (PLATFORM_UNIX)
+  target_link_libraries(test_main stdc++ stdc++fs m)
 endif()
