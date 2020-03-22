@@ -12,6 +12,7 @@ project(stdext)
 
 # Use C++ 17 standard for the whole project
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIREMENT TRUE)
 
 # Determine target platform and compiler
 
