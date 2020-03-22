@@ -220,3 +220,19 @@ elseif (PLATFORM_WINDOWS)
     target_link_libraries(stdext PUBLIC shlwapi)
   endif ()
 endif ()
+
+
+############
+# test/main
+###########"
+add_executable(test_main test/main/main.cpp)
+
+# Includes
+target_include_directories(test_main
+    PRIVATE $<TARGET_PROPERTY:stdext,INTERFACE_INCLUDE_DIRECTORIES>)
+
+target_link_libraries(test_main stdext)
+
+if (PLATFORM_UNIX AND COMPILER_CLANG)
+  target_link_libraries(test_main stdc++ m)
+endif()
