@@ -10,22 +10,24 @@
 
 // code source location handling depending on compiler features (WIP)
 #if __has_include( <source_location> )
+//#pragma message("<source_location>")
 #include <source_location>
 #define stdext_FILE std::source_location::current().file_name()
 #define stdext_LINE std::source_location::current().line()
 #define stdext_FUNCTION std::source_location::current().function_name()
 #define stdext_COLUMN std::source_location::current().column_name()
 
-#elif __has_include( <experimental/source_location> ) \
-&&( ( defined( __clang__ ) && ( __clang_major__ > 8 ) ) || ( defined( __GNUC__ ) && !defined( __clang__ ) ) )
+#elif __has_include( <experimental/source_location> ) && !(defined(__clang__) && ( __clang_major__ < 9 ))
+//#pragma message("<experimental/source_location>")
 #include <experimental/source_location>
 #define stdext_FILE std::experimental::source_location::current().file_name()
 #define stdext_LINE std::experimental::source_location::current().line()
 #define stdext_FUNCTION std::experimental::source_location::current().function_name()
 #define stdext_COLUMN std::experimental::source_location::current().column()
 
-#elif ( defined( _MSC_VER ) || ( defined( __clang__ ) && ( __clang_major__ > 8 ) ) || \
+#elif ( /*defined( _MSC_VER ) ||*/ ( defined( __clang__ ) && ( __clang_major__ >= 9 ) ) || \
         ( defined( __GNUC__ ) && !defined( __clang__ ) ) )
+//#pragma message("builtin/source_location")
 #define stdext_FILE __builtin_FILE()
 #define stdext_LINE __builtin_LINE()
 #define stdext_FUNCTION __builtin_FUNCTION()
@@ -35,6 +37,7 @@
 #define stdext_COLUMN -1
 #endif
 #else
+//#pragma message("no source_location")
 #define stdext_FILE "<unknown_file>"
 #define stdext_LINE -1
 #define stdext_COLUMN -1

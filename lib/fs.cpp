@@ -8,6 +8,20 @@
 #include <cstring>  // std::strcpy
 #include <string>   // std::string
 
+// std::filesystem:
+// Too buggy for GCC 7, 8 and CLANG 6, 7. Only start really working since GCC 9, CLANG 8 and MSVCv141
+// Let's live without it for now and use regular syscalls
+//
+//#if __has_include( <filesystem> )
+//#pragma message("<filesystem>")
+//#include <filesystem>
+// namespace fs = std::filesystem;
+//#elif __has_include( <experimental/filesystem> )
+//#pragma message("<experimental/filesystem>")
+//#include <experimental/filesystem>
+// namespace fs = std::experimental::filesystem;
+//#endif
+
 // MSVC
 #if defined( _WIN32 ) && !defined( __MINGW32__ )  // Let's use regular unix-style calls for MinGW
 #define USE_STRICT_CONST
