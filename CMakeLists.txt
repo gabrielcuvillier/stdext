@@ -239,6 +239,6 @@ target_include_directories(test_main
 
 target_link_libraries(test_main stdext)
 
-if (PLATFORM_UNIX)
+if (PLATFORM_UNIX OR MINGW)
   target_link_libraries(test_main stdc++ stdc++fs m)
 endif ()
