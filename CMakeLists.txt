@@ -82,9 +82,15 @@ set(ENABLE_O3 OFF CACHE BOOL "Enable O3 build for Release")
 # Use LTO for MinSizeRel (default=OFF)
 set(ENABLE_LTO OFF CACHE BOOL "Enable LTO")
 
+set(USE_CPP_FILESYSTEM_BACKEND CACHE BOOL "Use std::filesystem backend" ON)
+
 ##########################
 # Setup compilation flags
 ##########################
+
+if (USE_CPP_FILESYSTEM_BACKEND)
+  add_definitions(-DSTDEXT_USE_CPP_FILESYSTEM_BACKEND)
+endif ()
 
 # Enable all warnings
 if ((COMPILER_CLANG AND NOT COMPILER_MSVC) OR COMPILER_GCC)
@@ -216,7 +222,7 @@ elseif (PLATFORM_WINDOWS)
   target_link_libraries(stdext PUBLIC rpcrt4)
   # filesystem-related
   # NB: not on MinGW, as UNIX compatibility layer is used
-  if (NOT MINGW)
+  if (NOT MINGW AND NOT USE_CPP_FILESYSTEM_BACKEND)
     target_link_libraries(stdext PUBLIC shlwapi)
   endif ()
 endif ()
@@ -235,4 +241,4 @@ target_link_libraries(test_main stdext)
 
 if (PLATFORM_UNIX)
   target_link_libraries(test_main stdc++ stdc++fs m)
-endif()
+endif ()

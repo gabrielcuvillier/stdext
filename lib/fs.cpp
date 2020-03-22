@@ -8,19 +8,34 @@
 #include <cstring>  // std::strcpy
 #include <string>   // std::string
 
-// std::filesystem:
-// Too buggy for GCC 7, 8 and CLANG 6, 7. Only start really working since GCC 9, CLANG 8 and MSVCv141
-// Let's live without it for now and use regular syscalls
-//
-//#if __has_include( <filesystem> )
+#if defined( STDEXT_USE_CPP_FILESYSTEM_BACKEND )
+#if __has_include( <filesystem> )
 //#pragma message("<filesystem>")
-//#include <filesystem>
-// namespace fs = std::filesystem;
-//#elif __has_include( <experimental/filesystem> )
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif __has_include( <experimental/filesystem> )
 //#pragma message("<experimental/filesystem>")
-//#include <experimental/filesystem>
-// namespace fs = std::experimental::filesystem;
-//#endif
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#error "std::filesystem not implemented for current platform"
+#endif
+
+namespace stdext
+{
+std::string get_current_directory() { return fs::current_path().string(); }
+
+void change_current_directory( std::string const& path ) { fs::current_path( path ); }
+
+std::string get_file_name( std::string const& path ) { return fs::path( path ).filename().string(); }
+
+std::string get_directory_name( std::string const& path )
+{
+  return fs::path( path ).remove_filename().filename().string();
+}
+}  // namespace stdext
+
+#else
 
 // MSVC
 #if defined( _WIN32 ) && !defined( __MINGW32__ )  // Let's use regular unix-style calls for MinGW
@@ -120,3 +135,4 @@ std::string get_directory_name( std::string const& path )
 #endif
 }
 }  // namespace stdext
+#endif
