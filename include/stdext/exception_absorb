@@ -16,9 +16,9 @@ class _ExceptionAbsorber
 {
 public:
   // Constructors
-  _ExceptionAbsorber( std::exception const& );
+  _ExceptionAbsorber( std::exception const& ) noexcept;
   // Destructor
-  [[noreturn]] ~_ExceptionAbsorber();  // [[noreturn]] attribute is crucial there
+  [[noreturn]] ~_ExceptionAbsorber() noexcept;  // [[noreturn]] attribute is crucial there
 
   // Discared defaults
   _ExceptionAbsorber( _ExceptionAbsorber const& ) = delete;

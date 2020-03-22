@@ -12,11 +12,11 @@ namespace stdext
 class call_release_func
 {
 public:
-  explicit call_release_func( void ( *ipFunc )() = nullptr );
+  explicit call_release_func( void ( *ipFunc )() = nullptr ) noexcept;
 
   call_release_func( call_release_func&& iMoveFunc ) noexcept;
 
-  ~call_release_func();
+  ~call_release_func() noexcept;
 
   call_release_func& operator=( call_release_func&& iMoveFunc ) noexcept;
 

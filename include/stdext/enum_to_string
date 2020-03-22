@@ -12,7 +12,7 @@ namespace stdext
 // Template function to convert an enumeration class to a string
 // It have to be specialized for new enumerations classes
 template<typename T>
-[[nodiscard]] const char* enum_to_string( T );
+[[nodiscard]] const char* enum_to_string( T ) noexcept;
 }  // namespace stdext
 
 #endif

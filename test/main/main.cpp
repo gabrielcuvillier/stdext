@@ -7,7 +7,7 @@
 
 std::error_condition test_func() { return std::error_condition(); }
 
-int main( [[maybe_unused]] int argc, [[maybe_unused]] const char** argv )
+int main( [[maybe_unused]] int argc, [[maybe_unused]] const char** argv ) noexcept
 {
   stdext::install_unhandled_exception_handler();
 

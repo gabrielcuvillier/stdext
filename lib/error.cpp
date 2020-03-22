@@ -13,7 +13,7 @@
 // stdext
 #include <stdext/fs>
 
-void stdext::install_unhandled_exception_handler()
+void stdext::install_unhandled_exception_handler() noexcept
 {
   std::set_terminate( []() {
     std::fprintf( stderr, "Terminate handler called: aborting the program.\n" );
@@ -22,7 +22,7 @@ void stdext::install_unhandled_exception_handler()
 }
 
 template<>
-const char* stdext::enum_to_string( stdext::InternalError err )
+const char* stdext::enum_to_string( stdext::InternalError err ) noexcept
 {
   switch ( err ) {
     case stdext::InternalError::AssertionFailed: return "InternalError::AssertionFailed";
@@ -30,7 +30,7 @@ const char* stdext::enum_to_string( stdext::InternalError err )
   return "InternalError::<unknown>";
 }
 
-void stdext::PRINTERROR( const char* file, int line, int col, const char* func, const char* message )
+void stdext::PRINTERROR( const char* file, int line, int col, const char* func, const char* message ) noexcept
 {
   std::fprintf( stderr, "Failure in %s, line %d:%d: function '%s': '%s'\n",
                 stdext::get_file_name( std::string( file ) ).c_str(), line, col, func, message );
@@ -45,16 +45,16 @@ const char* const abort_loop_msg = " Aborting loop\n";
 const char* const continue_msg = " Continuing\n";
 }  // namespace
 
-void stdext::EPICFAIL_RET() { std::fprintf( stderr, abort_msg ); }
+void stdext::EPICFAIL_RET() noexcept { std::fprintf( stderr, abort_msg ); }
 
-void stdext::EPICFAIL_CRASH() { std::fprintf( stderr, abort_prog ); }
+void stdext::EPICFAIL_CRASH() noexcept { std::fprintf( stderr, abort_prog ); }
 
-void stdext::EPICFAIL_RET_VOID() { std::fprintf( stderr, abort_msg ); }
+void stdext::EPICFAIL_RET_VOID() noexcept { std::fprintf( stderr, abort_msg ); }
 
-void stdext::EPICFAIL_RET_INT() { std::fprintf( stderr, abort_msg ); }
+void stdext::EPICFAIL_RET_INT() noexcept { std::fprintf( stderr, abort_msg ); }
 
-void stdext::EPICFAIL_LOOP() { std::fprintf( stderr, skipping_iteration_msg ); }
+void stdext::EPICFAIL_LOOP() noexcept { std::fprintf( stderr, skipping_iteration_msg ); }
 
-void stdext::EPICFAIL_LOOP_BREAK() { std::fprintf( stderr, abort_loop_msg ); }
+void stdext::EPICFAIL_LOOP_BREAK() noexcept { std::fprintf( stderr, abort_loop_msg ); }
 
-void stdext::EPICFAIL_NOP() { std::fprintf( stderr, continue_msg ); }
+void stdext::EPICFAIL_NOP() noexcept { std::fprintf( stderr, continue_msg ); }

@@ -23,13 +23,13 @@ namespace fs = std::experimental::filesystem;
 
 namespace stdext
 {
-std::string get_current_directory() { return fs::current_path().string(); }
+std::string get_current_directory() noexcept { return fs::current_path().string(); }
 
-void change_current_directory( std::string const& path ) { fs::current_path( path ); }
+void change_current_directory( std::string const& path ) noexcept { fs::current_path( path ); }
 
-std::string get_file_name( std::string const& path ) { return fs::path( path ).filename().string(); }
+std::string get_file_name( std::string const& path ) noexcept { return fs::path( path ).filename().string(); }
 
-std::string get_directory_name( std::string const& path )
+std::string get_directory_name( std::string const& path ) noexcept
 {
   return fs::path( path ).remove_filename().filename().string();
 }

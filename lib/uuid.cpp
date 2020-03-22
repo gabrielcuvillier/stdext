@@ -22,7 +22,7 @@
 
 namespace stdext
 {
-std::string gen_uuid_string()
+std::string gen_uuid_string() noexcept
 {
 #if defined( _WIN32 )  // also includes MinGW
   UUID uuid;

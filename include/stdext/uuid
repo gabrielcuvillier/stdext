@@ -11,7 +11,7 @@
 
 namespace stdext
 {
-std::string gen_uuid_string();
+std::string gen_uuid_string() noexcept;
 }
 
 #endif

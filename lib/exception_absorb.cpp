@@ -9,7 +9,7 @@
 #include <exception>  // std::exception
 #include <typeinfo>   // typeid
 
-stdext::_ExceptionAbsorber::_ExceptionAbsorber( std::exception const& err )
+stdext::_ExceptionAbsorber::_ExceptionAbsorber( std::exception const& err ) noexcept
 {
   std::fprintf( stderr, "Exception thrown: %s: \"%s\"\n", typeid( err ).name(), err.what() );
 }
@@ -19,7 +19,7 @@ stdext::_ExceptionAbsorber::_ExceptionAbsorber( std::exception const& err )
 #pragma warning( disable : 4722 )  // Destructor never returns: that's the point here
 #endif
 
-stdext::_ExceptionAbsorber::~_ExceptionAbsorber()
+stdext::_ExceptionAbsorber::~_ExceptionAbsorber() noexcept
 {
   std::terminate();  // Ideally, std::set_terminate should be set by the main application
 }

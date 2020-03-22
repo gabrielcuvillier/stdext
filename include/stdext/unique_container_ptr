@@ -14,7 +14,7 @@ namespace stdext
 template<typename T>
 struct container_deleter
 {
-  void operator()( T* ipContainer )
+  void operator()( T* ipContainer ) noexcept
   {
     if ( ipContainer != nullptr ) {
       for ( auto* apElement : *ipContainer ) {
